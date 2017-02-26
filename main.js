@@ -8,15 +8,11 @@
 
         function program(elevator) {
             elevator.on("idle", function() {
-                if (elevator.loadFactor() != 0) {
+                if (elevator.loadFactor() > 0) {
                     // elevator is not empty, need to transport something
-                    do {
-                      console.log(elevator.loadFactor());
-                      elevator.destinationQueue = elevator.getPressedFloors();
-                      elevator.checkDestinationQueue();
-                    } while (elevator.loadFactor() != 0);
-
+                    doInnerRoute(elevator);
                 }else {
+                    // elevator is empty and waiting for orders
                     for (var i = 0; i < floors.length; i++) {
                         floors[i].on('up_button_pressed', function() {
                             elevator.goToFloor(this.level);
@@ -25,31 +21,19 @@
                             elevator.goToFloor(this.level);
                         });
                     }
-
-                    // taking more passengers when going in same direction
-                    // to optimilize
-                    elevator.on("passing_floor", function(floorNum, direction) {
-                        if ((direction === 'up' && elevator.loadFactor() != 1) || (direction == 'down' && elevator.loadFactor() != 1)) {
-                            floors[floorNum].on(direction + '_button_pressed', function() {
-                                elevator.goToFloor(floorNum);
-                            });
-                        }
-                    });
-
-                    // stop at floor when a button instide is pushed
-                    elevator.on("passing_floor", function(floorNum, direction) {
-                        if ((direction === 'up' && elevator.loadFactor() != 0) || (direction === 'down' && elevator.loadFactor() != 0)) {
-                            if (elevator.getPressedFloors().length != 0 && elevator.getPressedFloors().indexOf(floorNum) != -1) {
-                                elevator.goToFloor(floorNum);
-                            }
-                        }
-                    });
-
                 }
             });
+
+            // elevator isnt idle
+            // i need to write code that takes another people who wants go in same direction
+        }
+
+        function doInnerRoute(elevator) {
+            elevator.destinationQueue = elevator.getPressedFloors();
+            elevator.checkDestinationQueue();
         }
     },
-    update: function(dt, elevators, floors) {
-        // We normally don't need to do anything here
-    }
+        update: function(dt, elevators, floors) {
+            // We normally don't need to do anything here
+        }
 }
