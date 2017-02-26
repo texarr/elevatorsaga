@@ -10,9 +10,12 @@
             elevator.on("idle", function() {
                 if (elevator.loadFactor() != 0) {
                     // elevator is not empty, need to transport something
-                    console.log(elevator.loadFactor());
-                    elevator.destinationQueue = elevator.getPressedFloors();
-                    elevator.checkDestinationQueue();
+                    do {
+                      console.log(elevator.loadFactor());
+                      elevator.destinationQueue = elevator.getPressedFloors();
+                      elevator.checkDestinationQueue();
+                    } while (elevator.loadFactor() != 0);
+
                 }else {
                     for (var i = 0; i < floors.length; i++) {
                         floors[i].on('up_button_pressed', function() {
