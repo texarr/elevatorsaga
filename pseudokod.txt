@@ -8,10 +8,41 @@ pseudokod:
 # listener na buttonach w windzie
   - zmiana kolejki w zależności od pierwotnego kierunku windy oraz obecnego piętra na którym jest winda.
     - jeżeli naciśnięte piętro jest w trasie windy current floor < pushed floor i kierunek UP lub current floor > pushed and kierunek DOWN, dodajemy piętro do kolejki i sortujemy tablicę.
-    
+
 # listener na buttonach na piętrze
   - funkcja powinna nasłuchiwać przycisków na wszystkich piętrach obsługiwanych przez windę
     - powinna wyszukać windy jadącej w kierunku tego piętra i w kierunku wciśniętego buttona
 
 -odświeżenie kolejki na każdym z pięter
 
+# obsługa eventów #
+  # wciśnięcie buttona na piętrze
+    * jeżeli winda nie ma kierunku podróży i jest pusta to jedź na piętro gdzie wcisnięty przycisk
+      - dodaj kierunek podróży
+      - dodaj piętro do kolejki podróży
+      - dodaj cel do kolejki podróży
+
+    * jeżeli winda ma kierunek podróży i jest taki sam jak wciśnięty button na piętrze
+      - sprawdź czy wciśnięty button znajduje się na trasie koleki windy
+        - jeśli tak: sprawdź czy winda nie jest zapełniona i sprawdź czy piętro nie znajduje się już w kolejce
+          - jeśli nie: dodaj piętro do kolejki windy i posortuj kolejkę
+          - jeśli tak: nie rób nic
+        - jeśli nie(piętro nie znajduje się na trasie windy): czekaj na opróżnienie kolejki
+
+  # wciśnięcie buttona w windzie
+    - sprawdzenie kolejki podróży
+      - jeśli pusta: wyznaczenie celu podróży i kierunku
+      - jeśli niepusta:
+        - jeżeli currentFloor < pushedBtn && kierunek Up
+          - jeżeli pushedBtn < routeDestination
+            - dodaj piętro do kolejki, posortuj
+          - jeżeli nie to pushedBtn jest nowym routeDestination
+            - dodaj piętro do kolejki, wyznacz routeDestination i posortuj
+        ** teoretycznie nie powinno się to zdarzyć ale może ktoś wejść do windy jadącej w przeciwnym kierunku niż jego żądanie trzeba sprawdzić czy currentFloor > pushedBtn && kierunek Up
+
+        - jeżeli currentFloor > pushedBtn && kierunek Down
+          - jeżeli pushedBtn > routeDestination
+            - dodaj piętro do kolejki, posortuj
+          - jeżeli nie to pushedBtn jest nowym routeDestination
+            - dodaj piętro do kolejki, wyznacz routeDestination i posortuj
+        ** teoretycznie nie powinno się to zdarzyć ale może ktoś wejść do windy jadącej w przeciwnym kierunku niż jego żądanie trzeba sprawdzić czy currentFloor > pushedBtn && kierunek Up

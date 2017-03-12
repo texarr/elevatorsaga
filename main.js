@@ -1,37 +1,76 @@
 {
     init: function(elevators, floors) {
-        var first_elevator = elevators[0];
-        var second_elevator = elevators[1];
+      program(elevators[0]);
 
-        program(first_elevator);
-        program(second_elevator);
+      function program(elevator) {
+        var route = [];
+        var routeDestination = -1;
+        elevator.goingDownIndicator(false);
 
-        function program(elevator) {
-            elevator.on("idle", function() {
-                if (elevator.loadFactor() > 0) {
-                    // elevator is not empty, need to transport something
-                    doInnerRoute(elevator);
-                }else {
-                    // elevator is empty and waiting for orders
-                    for (var i = 0; i < floors.length; i++) {
-                        floors[i].on('up_button_pressed', function() {
-                            elevator.goToFloor(this.level);
-                        });
-                        floors[i].on('down_button_pressed', function() {
-                            elevator.goToFloor(this.level);
-                        });
-                    }
+        for (var i = 0, length = floors.length; i < length; i++) {
+          // Event for buttons pressed inside elevator
+          //
+          elevator.on("floor_button_pressed", function(floorNum) {
+
+          })
+          //
+          // endof event for inside buttons
+
+          // Event listeners on buttons pressed on floors
+          //
+          floors[i].on('up_button_pressed', function() {
+            if (elevator.goingUpIndicator() && elevator.currentFloor() < this.floorNum()) {
+              if (elevator.loadFactor() < 1) {
+                route = elevator.destinationQueue;
+                if (!checkFloorInRoute(this.floorNum(), route)) {
+                  // pushed floor is not in route right now. Adding floor to route
+                  route.push(this.floorNum());
+                  route.sort();
+                  elevator.destinationQueue = route;
+                  elevator.checkDestinationQueue();
                 }
-            });
 
-            // elevator isnt idle
-            // i need to write code that takes another people who wants go in same direction
+              }
+            }
+          });
+          floors[i].on('down_button_pressed', function() {
+            if (elevator.goingDownIndicator() && elevator.currentFloor() > this.floorNum()) {
+              if (elevator.loadFactor() < 1) {
+                route = elevator.destinationQueue;
+                if (!checkFloorInRoute(this.floorNum(), route)) {
+                  // pushed floor is not in route right now. Addin floor to route
+                  route.push(this.floorNum());
+                  route.sort();
+                  elevator.destinationQueue = route;
+                  elevator.checkDestinationQueue();
+                }
+              }
+            }
+          });
+          //
+          // endof buttons pressed listeners
+
+          // on passing floor, checking route and destination or new button pushed
+          //
+          elevator.on("passing_floor", function(floorNum, direction) {
+
+          });
+          //
+          // endof passing floor listener
         }
 
-        function doInnerRoute(elevator) {
-            elevator.destinationQueue = elevator.getPressedFloors();
-            elevator.checkDestinationQueue();
+        function checkFloorInRoute(pushedBtn, route) {
+          for (var i = 0; i < route.length; i++) {
+            if (route[i] === pushedBtn) {
+              return true;
+            }else {
+              return false;
+            }
+          }
         }
+
+      }
+
     },
         update: function(dt, elevators, floors) {
             // We normally don't need to do anything here
