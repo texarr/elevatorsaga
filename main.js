@@ -4,14 +4,41 @@
 
       function program(elevator) {
         var route = [];
-        var routeDestination = -1;
+        var routeDestination;
         elevator.goingDownIndicator(false);
+        elevator.goingUpIndicator(true);
 
         for (var i = 0, length = floors.length; i < length; i++) {
           // Event for buttons pressed inside elevator
           //
           elevator.on("floor_button_pressed", function(floorNum) {
-
+            if (elevator.destinationQueue.length === 0) {
+              elevator.destinationQueue.push(floorNum);
+              routeDestination = floorNum;
+              if (elevator.currentFloor() < routeDestination) {
+                elevator.goingUpIndicator(true);
+                elevator.goingDownIndicator(false);
+              }else if (elevator.currentFloor() > routeDestination) {
+                elevator.goingUpIndicator(false);
+                elevator.goingDownIndicator(true);
+              }
+            }else if (elevator.destinationQueue.length != 0) {
+              if ((elevator.currentFloor() < floorNum) && elevator.goingUpIndicator()) {
+                if (floorNum < routeDestination) {
+                  elevator.destinationQueue.push(floorNum);
+                  elevator.destinationQueue.sort();
+                  elevator.checkDestinationQueue();
+                }else {
+                  routeDestination = floorNum;
+                  elevator.destinationQueue.push(floorNum);
+                  elevator.checkDestinationQueue();
+                }
+              }else if ((elevator.currentFloor() > floorNum) && elevator.goingDownIndicator()) {
+                if (floorNum > routeDestination) {
+                  //
+                }
+              }
+            }
           })
           //
           // endof event for inside buttons
@@ -21,12 +48,12 @@
           floors[i].on('up_button_pressed', function() {
             if (elevator.goingUpIndicator() && elevator.currentFloor() < this.floorNum()) {
               if (elevator.loadFactor() < 1) {
-                route = elevator.destinationQueue;
-                if (!checkFloorInRoute(this.floorNum(), route)) {
+                if (!checkFloorInRoute(this.floorNum(), elevator.destinationQueue)) {
                   // pushed floor is not in route right now. Adding floor to route
-                  route.push(this.floorNum());
-                  route.sort();
-                  elevator.destinationQueue = route;
+                  elevator.destinationQueue.push(this.floorNum());
+                  elevator.destinationQueue.sort();
+                  routeDestination = elevator.destinationQueue[elevator.destinationQueue.length - 1];
+                  elevator.goingUpIndicator(true);
                   elevator.checkDestinationQueue();
                 }
 
@@ -36,12 +63,12 @@
           floors[i].on('down_button_pressed', function() {
             if (elevator.goingDownIndicator() && elevator.currentFloor() > this.floorNum()) {
               if (elevator.loadFactor() < 1) {
-                route = elevator.destinationQueue;
-                if (!checkFloorInRoute(this.floorNum(), route)) {
+                if (!checkFloorInRoute(this.floorNum(), elevator.destinationQueue)) {
                   // pushed floor is not in route right now. Addin floor to route
-                  route.push(this.floorNum());
-                  route.sort();
-                  elevator.destinationQueue = route;
+                  elevator.destinationQueue.push(this.floorNum());
+                  elevator.destinationQueue.sort();
+                  routeDestination = elevator.destinationQueue[elevator.destinationQueue.length - 1];
+                  elevator.goingDownIndicator(true);
                   elevator.checkDestinationQueue();
                 }
               }
