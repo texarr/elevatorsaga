@@ -13,8 +13,6 @@ pseudokod:
   - funkcja powinna nasłuchiwać przycisków na wszystkich piętrach obsługiwanych przez windę
     - powinna wyszukać windy jadącej w kierunku tego piętra i w kierunku wciśniętego buttona
 
--odświeżenie kolejki na każdym z pięter
-
 # obsługa eventów #
   # wciśnięcie buttona na piętrze
     * jeżeli winda nie ma kierunku podróży i jest pusta to jedź na piętro gdzie wcisnięty przycisk
@@ -46,3 +44,5 @@ pseudokod:
           - jeżeli nie to pushedBtn jest nowym routeDestination
             - dodaj piętro do kolejki, wyznacz routeDestination i posortuj
         ** teoretycznie nie powinno się to zdarzyć ale może ktoś wejść do windy jadącej w przeciwnym kierunku niż jego żądanie trzeba sprawdzić czy currentFloor > pushedBtn && kierunek Up
+
+# odświeżenie kolejki na każdym z pięter

@@ -28,14 +28,28 @@
                   elevator.destinationQueue.push(floorNum);
                   elevator.destinationQueue.sort();
                   elevator.checkDestinationQueue();
+                  elevator.goingUpIndicator(true);
+                  elevator.goingDownIndicator(false);
                 }else {
                   routeDestination = floorNum;
                   elevator.destinationQueue.push(floorNum);
                   elevator.checkDestinationQueue();
+                  elevator.goingUpIndicator(true);
+                  elevator.goingDownIndicator(false);
                 }
               }else if ((elevator.currentFloor() > floorNum) && elevator.goingDownIndicator()) {
                 if (floorNum > routeDestination) {
-                  //
+                  elevator.destinationQueue.push(floorNum);
+                  elevator.destinationQueue.sort();
+                  elevator.checkDestinationQueue();
+                  elevator.goingUpIndicator(false);
+                  elevator.goingDownIndicator(true);
+                } else {
+                  routeDestination = floorNum;
+                  elevator.destinationQueue.push(floorNum);
+                  elevator.checkDestinationQueue();
+                  elevator.goingUpIndicator(false);
+                  elevator.goingDownIndicator(true);
                 }
               }
             }
@@ -84,6 +98,15 @@
           });
           //
           // endof passing floor listener
+
+          // on idle event listener
+          //
+          elevator.on("idle", function() {
+            elevator.goingUpIndicator(true);
+            elevator.goingDownIndicator(true);
+          });
+          //
+          // endof edle event listener
         }
 
         function checkFloorInRoute(pushedBtn, route) {
